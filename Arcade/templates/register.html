@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es-mx">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+
+    <h1>Register</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="username"> Nombre de usuario:</label>    
+        {{ form.username }}
+        <label for="email">Correo:</label>
+        {{ form.email }}
+        <label for="password1">Contraseña:</label>
+        {{ form.password1 }}
+        <label for="password2">Confirmar contraseña:</label>
+        {{ form.password2 }}
+        <button type="submit">Register</button>
+</body>
+</html>
