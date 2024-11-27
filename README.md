@@ -19,8 +19,8 @@ Sigue estos pasos para configurar y ejecutar el proyecto localmente.
 Primero, clona el repositorio desde GitHub:
 
 ```bash
-git clone https://github.com/byChino/RubricaUX.git
-cd RubricaUX
+https://github.com/byChino/Curso_Django.git
+cd Curso_Django
 ```
 ### 2. Crear el entorno virtual
 ```bash
@@ -29,11 +29,12 @@ venv/scripts/activate
 ```
 ### 3. Instalar las dependencias
 ```bash
-pip install -r requeriments.txt
+pip install -r requirements.txt
 ```
 ☝🏿Si falla instalarlos manualmente
 
-### 4. Configurar la base de datos
+### 4. Configurar la base de datos para postgres o mysql
+Configuracion para Postgres
 ``` bash
 DATABASES = {
 
@@ -56,16 +57,41 @@ DATABASES = {
 }
 ```
 
+configuracion para mysql
+``` bash
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'nombre_de_la_bd',
+        'USER': 'tu_usuario',
+        'PASSWORD': 'tu_contraseña',
+        'HOST': 'localhost',
+        'PORT': '3306',  # Puerto por defecto de MySQL
+    }
+}
+```
+
+En caso de contar niguno de los usar el sqllite
+
+``` bash
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # Nombre del archivo SQLite
+    }
+}
+```
+Favor de instalar la extension de SQLite en en visual studio
+
 ### 5. Aplicar las migraciones
 Aplica las migraciones para crear las tablas en la base de datos:
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
 Nota: Borrar el contenido de la carpeta migratas antes de usar este comando, y debes aplicar el siguiente comando
-```bash
-python manage.py makemigrations
-```
+
 Tambien si quieres cargar un modelo en particular solo pon el nombre adelante de makemigrations
 
 ### 6. Crear un superusuario
