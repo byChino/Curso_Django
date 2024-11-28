@@ -74,8 +74,22 @@
                         </button>
                         <div class="dropdown-menu  dropdown-menu-end" aria-labelledby="triggerId">
                             {% if user.is_authenticated %}
-                             <li><a href="{% url 'perfil' user.id %}">Perfil</a></li>
-                            <li><a href="{% url 'config' user.id %}">Configuraciones</a></li>
+
+
+                          
+                           {% if  view_persona %}
+                                <li><a href="{% url 'perfil' user.id %}">Perfil</a></li>
+                            {% else %}
+                                <li><span>No tienes permisos para ver esta sección</span></li>
+                            {% endif %}
+
+                            {% if  change_persona %}
+                                <li><a href="{% url 'config' user.id %}">Configuraciones</a></li>
+                            {% else %}
+                                <li><span>No tienes permisos para editar esta sección</span></li>
+                            {% endif %}
+
+                                  
                             <li><a href="{% url 'logout' %}">Logout</a></li>
                             {% else %}
                             

@@ -126,8 +126,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static'] # Ruta a la carpeta de archivos estát
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'
 
 
 # Default primary key field type
