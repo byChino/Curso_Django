@@ -20,7 +20,13 @@
     font-size: 1.5rem;
     color: #333;
 }
-
+.container-Historial{
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
 /* Estilo para el contenedor de datos personales */
 .container-Persona {
     margin-top: 20px;
