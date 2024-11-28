@@ -42,8 +42,22 @@ def home(request):
         .order_by("-max_puntaje")
     )
 
-    context = {"ranking": ranking}
-    return render(request, "home.html", context) # Renderiza la plantilla del home
+    # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
+    view_persona = (
+        request.user.has_perm('Arcade.view_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    change_persona = (
+        request.user.has_perm('Arcade.change_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+
+    context = {
+        "ranking": ranking,
+        "view_persona": view_persona,
+        "change_persona": change_persona,
+    }
+    return render(request, "home.html", context)# Renderiza la plantilla del home
 
 
 # Vista para el logout
@@ -70,12 +84,17 @@ def register(request):
             return render(request, 'register.html', {'error': str(e)})
     return render(request, 'register.html', {'form': form})
 
-
-
+# importamos el decorador para los permisos de usuario
+from django.contrib.auth.decorators import permission_required
 @login_required
 def config(request, id_user):
     # Obtiene el usuario actual
     user = get_object_or_404(User, id=id_user)
+
+    # Verificar si el usuario tiene permisos para agregar o editar una persona, o si pertenece al grupo "Jugador"
+    if not (user.has_perm('Arcade.add_persona') or user.has_perm('Arcade.change_persona') or user.groups.filter(name='Jugador').exists()):
+        messages.error(request, "No tienes permisos para acceder a esta sección.")
+        return redirect('home')  # Redirige al home o a una página de acceso denegado
 
     # Obtiene o crea una instancia vacía de Persona asociada al usuario
     persona, created = Persona.objects.get_or_create(user=user)
@@ -114,8 +133,19 @@ def config(request, id_user):
                 update_session_auth_hash(request, user)  # Mantiene la sesión activa tras cambiar la contraseña
                 messages.success(request, "¡Datos de usuario guardados correctamente!")
                 return redirect('config', id_user=id_user)
+            
 
-    return render(request, 'configuracion.html', {'user': user, 'persona': persona, 'formPersona': formPersona})
+            # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
+            view_persona = (
+                request.user.has_perm('Arcade.view_persona') or 
+                request.user.groups.filter(name='Jugador').exists()
+            )
+            change_persona = (
+                request.user.has_perm('Arcade.change_persona') or 
+                request.user.groups.filter(name='Jugador').exists()
+            )
+
+    return render(request, 'configuracion.html', {'user': user, 'persona': persona, 'formPersona': formPersona , 'view_persona': view_persona, 'change_persona': change_persona})
 
 
   
@@ -123,7 +153,19 @@ def config(request, id_user):
 
 
 def Adventure(request):
-    return render(request, 'games/Adventure.html')
+
+
+    # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
+    view_persona = (
+        request.user.has_perm('Arcade.view_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    change_persona = (
+        request.user.has_perm('Arcade.change_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+
+    return render(request, 'games/Adventure.html', {'view_persona': view_persona, 'change_persona': change_persona})
   
 @csrf_exempt  # Solo para pruebas locales; elimina esta línea en producción
 @login_required
@@ -149,14 +191,38 @@ def snake(request, id_user):
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)})
 
-    return render(request, 'games/snake.html')
+    # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
+    view_persona = (
+        request.user.has_perm('Arcade.view_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    change_persona = (
+        request.user.has_perm('Arcade.change_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+
+
+
+    return render(request, 'games/snake.html', {'view_persona': view_persona, 'change_persona': change_persona})
 
 @login_required
 def perfil(request, id_user):
     user = get_object_or_404(User, id=id_user)
     persona = get_object_or_404(Persona, user=user)
     sknake = JuegoSnake.objects.filter(user=user).order_by('-puntaje')
-    return render(request, 'perfil.html', {'user': user, 'persona':persona ,'sknake':sknake}) 
+
+    # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
+    view_persona = (
+        request.user.has_perm('Arcade.view_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    change_persona = (
+        request.user.has_perm('Arcade.change_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+
+
+    return render(request, 'perfil.html', {'user': user, 'persona':persona ,'sknake':sknake, 'view_persona': view_persona, 'change_persona': change_persona}) 
 
 
 
@@ -178,9 +244,27 @@ def delete_account(request, id_user):
     return redirect('config', id_user=id_user)
 
 def dinosaur_run(request):
-    return render(request, 'games/Dino_Runner.html')
+    # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
+    view_persona = (
+        request.user.has_perm('Arcade.view_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    change_persona = (
+        request.user.has_perm('Arcade.change_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    return render(request, 'games/Dino_Runner.html' , {'view_persona': view_persona, 'change_persona': change_persona})
 
 
 
 def memory_game(request):
-    return render(request, 'games/memory_game.html')
+    # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
+    view_persona = (
+        request.user.has_perm('Arcade.view_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    change_persona = (
+        request.user.has_perm('Arcade.change_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    return render(request, 'games/memory_game.html', {'view_persona': view_persona, 'change_persona': change_persona})
