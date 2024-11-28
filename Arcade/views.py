@@ -29,15 +29,27 @@ def login(request):
 
 
 # Vista para el home (requiere autenticación)
-
+from django.db.models import Max
 def home(request):
-    return render(request, 'home.html')  # Renderiza la plantilla del home
+    # Obtener el ranking con los datos requeridos
+    ranking = (
+        JuegoSnake.objects.values("user__username")
+        .annotate(
+            max_puntaje=Max("puntaje"),
+            max_nivel=Max("nivelMax"),
+            max_tiempo=Max("tiempoMax"),
+        )
+        .order_by("-max_puntaje")
+    )
+
+    context = {"ranking": ranking}
+    return render(request, "home.html", context) # Renderiza la plantilla del home
 
 
 # Vista para el logout
 def logout(request):
     auth_logout(request)  # Cerrar sesión
-    return redirect('home')  # Redirige al login
+    return redirect('login')  # Redirige al login
 
 def register(request):
     form=   UserForm()
@@ -108,6 +120,8 @@ def config(request, id_user):
 
   
 
+
+
 def Adventure(request):
     return render(request, 'games/Adventure.html')
   
@@ -136,3 +150,37 @@ def snake(request, id_user):
             return JsonResponse({"success": False, "message": str(e)})
 
     return render(request, 'games/snake.html')
+
+@login_required
+def perfil(request, id_user):
+    user = get_object_or_404(User, id=id_user)
+    persona = get_object_or_404(Persona, user=user)
+    sknake = JuegoSnake.objects.filter(user=user).order_by('-puntaje')
+    return render(request, 'perfil.html', {'user': user, 'persona':persona ,'sknake':sknake}) 
+
+
+
+@login_required
+def delete_account(request, id_user):
+    user = get_object_or_404(User, id=id_user)
+    
+    if request.method == "POST":
+        # Elimina la cuenta
+        user.delete()
+        messages.success(request, "Tu cuenta ha sido eliminada con éxito.")
+        
+        # Cierra la sesión
+        logout(request)
+        
+        # Redirige al login
+        return redirect('login')
+
+    return redirect('config', id_user=id_user)
+
+def dinosaur_run(request):
+    return render(request, 'games/Dino_Runner.html')
+
+
+
+def memory_game(request):
+    return render(request, 'games/memory_game.html')
