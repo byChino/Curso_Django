@@ -114,3 +114,11 @@ Finalmente, ejecuta el servidor de desarrollo de Django:
 ```bash
 python manage.py runserver
 ```
+
+### 8. Descargar actualizaciones
+Para descargar las actualizaciones de esta rama se necesita el siguiente comando 
+```bash
+git pull origin main
+```
+Si tienes dudas si sufriran tus archivos modificados, No, los cambios locales que has hecho no se perderán al ejecutar git pull origin main.
+Pero si tienes el temor de perder los archivos descargarlo en .zip
