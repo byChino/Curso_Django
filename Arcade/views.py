@@ -96,6 +96,16 @@ def config(request, id_user):
         messages.error(request, "No tienes permisos para acceder a esta sección.")
         return redirect('home')  # Redirige al home o a una página de acceso denegado
 
+    # Inicializa los permisos y grupos
+    view_persona = (
+        user.has_perm('Arcade.view_persona') or 
+        user.groups.filter(name='Jugador').exists()
+    )
+    change_persona = (
+        user.has_perm('Arcade.change_persona') or 
+        user.groups.filter(name='Jugador').exists()
+    )
+
     # Obtiene o crea una instancia vacía de Persona asociada al usuario
     persona, created = Persona.objects.get_or_create(user=user)
 
@@ -133,20 +143,14 @@ def config(request, id_user):
                 update_session_auth_hash(request, user)  # Mantiene la sesión activa tras cambiar la contraseña
                 messages.success(request, "¡Datos de usuario guardados correctamente!")
                 return redirect('config', id_user=id_user)
-            
 
-            # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
-            view_persona = (
-                request.user.has_perm('Arcade.view_persona') or 
-                request.user.groups.filter(name='Jugador').exists()
-            )
-            change_persona = (
-                request.user.has_perm('Arcade.change_persona') or 
-                request.user.groups.filter(name='Jugador').exists()
-            )
-
-    return render(request, 'configuracion.html', {'user': user, 'persona': persona, 'formPersona': formPersona , 'view_persona': view_persona, 'change_persona': change_persona})
-
+    return render(request, 'configuracion.html', {
+        'user': user,
+        'persona': persona,
+        'formPersona': formPersona,
+        'view_persona': view_persona,
+        'change_persona': change_persona
+    })
 
   
 
@@ -171,7 +175,15 @@ def Adventure(request):
 @login_required
 def snake(request, id_user):
     user = get_object_or_404(User, id=id_user)
-
+    # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
+    view_persona = (
+        request.user.has_perm('Arcade.view_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
+    change_persona = (
+        request.user.has_perm('Arcade.change_persona') or 
+        request.user.groups.filter(name='Jugador').exists()
+    )
     if request.method == "POST":
         try:
             data = json.loads(request.body)  # Leer el cuerpo JSON
@@ -191,15 +203,7 @@ def snake(request, id_user):
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)})
 
-    # Comprobar si el usuario tiene el permiso o pertenece al grupo 'Jugador'
-    view_persona = (
-        request.user.has_perm('Arcade.view_persona') or 
-        request.user.groups.filter(name='Jugador').exists()
-    )
-    change_persona = (
-        request.user.has_perm('Arcade.change_persona') or 
-        request.user.groups.filter(name='Jugador').exists()
-    )
+    
 
 
 
